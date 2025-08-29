@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Coldharbour Lane UG</title>
+  <style>
+    :root{
+      --pad: clamp(16px, 3vw, 48px);
+      --small: clamp(12px, 1.1vw, 16px);
+      --base: clamp(14px, 1.25vw, 18px);
+      --gap: clamp(16px, 2.5vw, 28px);
+    }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;                /* non scrollable */
+      background: #fff;
+      font-family: "Times New Roman", Times, serif;
+      color: #000;
+    }
+
+    .page {
+      position: relative;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Top-left heading */
+    .brand {
+      position: absolute;
+      top: var(--pad);
+      left: var(--pad);
+      line-height: 1.4;
+      font-size: var(--small);
+      user-select: none;
+    }
+
+    /* Center column */
+    .center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--gap);
+      padding: calc(var(--pad) * 2) var(--pad);
+      text-align: center;
+    }
+
+    /* Video replacement */
+    .video-container {
+      width: min(56vw, 520px);
+      aspect-ratio: 1 / 1;   /* keep square */
+      background: #000;
+      overflow: hidden;
+    }
+
+    .video-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: var(--base);
+      font-style: italic;
+      font-weight: 700;
+    }
+
+    .clients,
+    .address {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: var(--base);
+      line-height: 1.6;
+    }
+
+    .address a, .address a:visited {
+      color: inherit;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="brand">
+      <div>Coldharbour Lane UG</div>
+      <div>&copy; 2025</div>
+    </div>
+
+    <main class="center">
+      <!-- Replaced placeholder with video -->
+      <div class="video-container">
+        <video autoplay loop muted playsinline>
+          <source src="COLDHARBOURLANEUK.mov" type="video/quicktime">
+          <source src="COLDHARBOURLANEUK.mp4" type="video/mp4">
+          Ihr Browser unterstützt das Video-Tag nicht.
+        </video>
+      </div>
+
+      <h2 class="section-title">Selected Clients:</h2>
+      <ul class="clients">
+        <li>032c</li>
+        <li>Dalston Jazz Bar</li>
+        <li>Ernst Busch</li>
+        <li>KaDeWe</li>
+      </ul>
+
+      <ul class="address">
+        <li>Sportforumstrasse 7</li>
+        <li>14053 Berlin</li>
+        <li><a href="tel:+4915228007373">+49&nbsp;152&nbsp;2800&nbsp;73&nbsp;73</a></li>
+        <li><a href="mailto:pele@coldharbourlane.com">pele@coldharbourlane.com</a></li>
+      </ul>
+    </main>
+  </div>
+</body>
+</html>
