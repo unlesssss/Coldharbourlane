@@ -62,8 +62,13 @@
       display: block;
     }
 
+    /* Text block wrapper (moves everything down) */
+    .text-block {
+      margin-top: 32px;  /* extra space below video */
+    }
+
     .section-title {
-      margin: 0;
+      margin: 0 0 4px 0;  /* tighter to the client list */
       font-size: var(--base);
       font-style: italic;
       font-weight: 700;
@@ -76,6 +81,10 @@
       padding: 0;
       font-size: var(--base);
       line-height: 1.4;   /* tighter spacing */
+    }
+
+    .address {
+      margin-top: 20px; /* little breathing room before address */
     }
 
     .address a, .address a:visited {
@@ -92,7 +101,7 @@
     </div>
 
     <main class="center">
-      <!-- Video, not cropped -->
+      <!-- Video -->
       <div class="video-container">
         <video autoplay loop muted playsinline>
           <source src="COLDHARBOURLANEUK.mov" type="video/quicktime">
@@ -101,22 +110,24 @@
         </video>
       </div>
 
-      <h2 class="section-title">Clients:</h2>
-      <ul class="clients">
-        <li>032c</li>
-        <li>Dalston Jazz Bar</li>
-        <li>Ernst Busch</li>
-        <li>KaDeWe</li>
-      </ul>
+      <!-- Text block -->
+      <div class="text-block">
+        <h2 class="section-title">Clients:</h2>
+        <ul class="clients">
+          <li>032c</li>
+          <li>Dalston Jazz Bar</li>
+          <li>Ernst Busch</li>
+          <li>KaDeWe</li>
+        </ul>
 
-      <ul class="address">
-        <li>Sportforumstrasse 7</li>
-        <li>14053 Berlin</li>
-        <li><a href="tel:+4915228007373">+49&nbsp;152&nbsp;2800&nbsp;73&nbsp;73</a></li>
-        <li><a href="mailto:pele@coldharbourlane.com">pele@coldharbourlane.com</a></li>
-      </ul>
+        <ul class="address">
+          <li>Sportforumstrasse 7</li>
+          <li>14053 Berlin</li>
+          <li><a href="tel:+4915228007373">+49&nbsp;152&nbsp;2800&nbsp;73&nbsp;73</a></li>
+          <li><a href="mailto:pele@coldharbourlane.com">pele@coldharbourlane.com</a></li>
+        </ul>
+      </div>
     </main>
   </div>
 </body>
 </html>
-
