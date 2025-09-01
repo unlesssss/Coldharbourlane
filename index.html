@@ -12,6 +12,26 @@
       --gap: clamp(12px, 2vw, 20px);
     }
 
+  .overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    display: grid; place-items: center;
+    background: rgba(255,255,255,0.9);           /* light veil */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .overlay .card{
+    text-align:center;
+    padding: 28px 32px;
+    border: 1px solid #000;
+    background:#fff;
+    max-width: 520px;
+    margin: 0 16px;
+    font-family: "Times New Roman", Times, serif;
+  }
+  .overlay h1{ margin:0 0 8px 0; font-size: 20px; letter-spacing:.02em; }
+  .overlay p{ margin:0; font-size: 14px; line-height:1.4; }
+</style>
+
     html, body {
       margin: 0;
       height: 100%;
