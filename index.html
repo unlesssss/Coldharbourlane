@@ -38,7 +38,7 @@
       position: relative;
       aspect-ratio: var(--media-ar);
       overflow: hidden;
-      background: #fff; /* white letter/pillar-boxing */
+      background: #fff; /* white borders instead of black */
     }
     .video-container > * {
       position: absolute; inset: 0;
@@ -56,22 +56,9 @@
     .text-block { margin-top: 32px; }
     .section-title { margin: 0 0 4px 0; font-size: var(--base); font-style: italic; font-weight: 700; }
     .clients, .address { list-style: none; margin: 0; padding: 0; font-size: var(--base); line-height: 1.4; }
-
-    /* clickable client items; remove focus/tap outlines everywhere */
-    .clients li {
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .clients li:focus,
-    .clients li:focus-visible,
-    .clients li:active {
-      outline: none !important;
-    }
-
-    /* more space before address block */
-    .address {
-      margin-top: 30px;  /* was 20px */
-    }
+    .clients li { cursor: pointer; }
+    .clients li:focus { outline: 1px dotted #000; outline-offset: 2px; }
+    .address { margin-top: 20px; }
     .address a, .address a:visited { color: inherit; text-decoration: none; }
   </style>
 </head>
@@ -96,7 +83,7 @@
         <h2 class="section-title">Clients:</h2>
         <ul class="clients" id="clientsList">
           <li tabindex="0" data-img="032c.jpeg">032c</li>
-          <li tabindex="0" data-img="Kadewe.jpg">KaDeWe</li>
+          <li tabindex="0" data-img="Kadewe.jpg">KaDeWe</li> <!-- converted from PDF -->
           <li tabindex="0" data-img="dalstonjazzbar.jpeg">Dalston Jazz Bar</li>
           <li tabindex="0" data-img="ernstbusch.jpeg">Ernst Busch Berlin</li>
           <li tabindex="0" data-img="langstonuibel.jpeg">Langston Uibel</li>
@@ -119,7 +106,7 @@
       const videoEl  = document.getElementById('heroVideo');
       const list     = document.getElementById('clientsList');
 
-      // Update aspect ratio to match video so the height stays fixed
+      // Update aspect ratio to match video
       videoEl.addEventListener('loadedmetadata', () => {
         try {
           const w = videoEl.videoWidth || 16;
@@ -140,13 +127,13 @@
         videoEl.play().catch(()=>{});
       }
 
-      // Preload images (can be deferred later for speed)
+      // Preload
       Array.from(list.querySelectorAll('li[data-img]')).forEach(li=>{
         const src = li.getAttribute('data-img');
         if (src) { const i = new Image(); i.src = src; }
       });
 
-      // Desktop hover
+      // Hover/focus
       list.addEventListener('mouseover', e=>{
         const li = e.target.closest('li[data-img]');
         if (li) showImage(li.dataset.img);
@@ -155,8 +142,6 @@
         const to = e.relatedTarget;
         if (!list.contains(to)) showVideo();
       });
-
-      // Keyboard focus (kept for functionality, outline is disabled via CSS)
       list.addEventListener('focusin', e=>{
         const li = e.target.closest('li[data-img]');
         if (li) showImage(li.dataset.img);
@@ -166,7 +151,7 @@
         if (!list.contains(to)) showVideo();
       });
 
-      // Click/tap to show; click/tap outside to revert
+      // Tap/click
       list.addEventListener('click', e=>{
         const li = e.target.closest('li[data-img]');
         if (!li) return;
