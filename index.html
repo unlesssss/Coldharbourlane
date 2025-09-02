@@ -13,7 +13,7 @@
       --small: clamp(11px, 1vw, 14px);
       --base: clamp(12px, 1.1vw, 15px);
       --gap: clamp(12px, 2vw, 20px);
-      --media-ar: 16/9; /* JS updates to actual video ratio at runtime */
+      --media-ar: 16/9; /* updated to actual video ratio in JS */
     }
 
     html, body {
@@ -32,33 +32,26 @@
       gap: var(--gap); padding: calc(var(--pad) * 2) var(--pad); text-align: center;
     }
 
-    /* ===== Media box (fixed height via aspect-ratio) ===== */
+    /* ===== Media box ===== */
     .video-container {
       max-width: 520px; width: 100%;
       position: relative;
       aspect-ratio: var(--media-ar);
       overflow: hidden;
-      background: #000; /* letterbox/pillarbox background */
+      background: #fff; /* white borders instead of black */
     }
-    /* Stack all media exactly on top of each other; fade between them */
     .video-container > * {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       display: block;
       transition: opacity .18s ease-in-out;
-      background: #000; /* ensure bars are black for imgs/PDFs */
+      background: #fff;
     }
-    /* Keep video filling (like before) */
     .video-container video { object-fit: cover; opacity: 1; }
+    .video-container img  { object-fit: contain; opacity: 0; pointer-events: none; }
 
-    /* Images/PDFs: show everything (no crop) */
-    .video-container img { object-fit: contain; opacity: 0; pointer-events: none; }
-    .video-container embed { opacity: 0; pointer-events: none; }
-
-    /* When an image/PDF is active, swap visibility */
     .video-container.show-image video { opacity: 0; }
-    .video-container.show-image img,
-    .video-container.show-image embed { opacity: 1; }
+    .video-container.show-image img   { opacity: 1; }
 
     .text-block { margin-top: 32px; }
     .section-title { margin: 0 0 4px 0; font-size: var(--base); font-style: italic; font-weight: 700; }
@@ -78,22 +71,19 @@
 
     <main class="center">
       <div class="video-container" id="mediaBox" aria-live="polite">
-        <!-- Base video -->
         <video id="heroVideo" autoplay loop muted playsinline>
           <source src="COLDHARBOURLANEUK.mov" type="video/quicktime">
           <source src="COLDHARBOURLANEUK.mp4" type="video/mp4">
           Ihr Browser unterstützt das Video-Tag nicht.
         </video>
-        <!-- Swapped-in client image -->
         <img id="clientImage" alt="" />
-        <!-- PDF preview gets injected as <embed id="pdfPreview"> when needed -->
       </div>
 
       <div class="text-block">
         <h2 class="section-title">Clients:</h2>
         <ul class="clients" id="clientsList">
           <li tabindex="0" data-img="032c.jpeg">032c</li>
-          <li tabindex="0" data-img="Kadewe.pdf">KaDeWe</li>
+          <li tabindex="0" data-img="Kadewe.jpeg">KaDeWe</li> <!-- converted from PDF -->
           <li tabindex="0" data-img="dalstonjazzbar.jpeg">Dalston Jazz Bar</li>
           <li tabindex="0" data-img="ernstbusch.jpeg">Ernst Busch Berlin</li>
           <li tabindex="0" data-img="langstonuibel.jpeg">Langston Uibel</li>
@@ -116,7 +106,7 @@
       const videoEl  = document.getElementById('heroVideo');
       const list     = document.getElementById('clientsList');
 
-      // Lock the container’s ratio to the actual video once metadata is ready
+      // Update aspect ratio to match video
       videoEl.addEventListener('loadedmetadata', () => {
         try {
           const w = videoEl.videoWidth || 16;
@@ -128,48 +118,22 @@
       });
 
       function showImage(src){
-        // Remove any existing PDF embed when switching
-        const oldEmb = mediaBox.querySelector('embed#pdfPreview');
-        if (oldEmb) oldEmb.remove();
-
-        if (src.toLowerCase().endsWith('.pdf')) {
-          const emb = document.createElement('embed');
-          emb.id   = 'pdfPreview';
-          emb.type = 'application/pdf';
-          // page-fit ensures FULL page in the box (no crop)
-          emb.src  = src + '#zoom=page-fit';
-          emb.style.width = '100%';
-          emb.style.height = '100%';
-          emb.style.background = '#000';
-          emb.style.position = 'absolute';
-          emb.style.inset = '0';
-          mediaBox.appendChild(emb);
-          imgEl.removeAttribute('src');
-        } else {
-          imgEl.src = src;
-        }
-
+        imgEl.src = src;
         mediaBox.classList.add('show-image');
-        // Pause video while image shown
         videoEl.pause();
       }
-
       function showVideo(){
-        // Clean up any PDF embed
-        const emb = mediaBox.querySelector('embed#pdfPreview');
-        if (emb) emb.remove();
-
         mediaBox.classList.remove('show-image');
         videoEl.play().catch(()=>{});
       }
 
-      // Preload non-PDF images for instant swap
+      // Preload
       Array.from(list.querySelectorAll('li[data-img]')).forEach(li=>{
         const src = li.getAttribute('data-img');
-        if (src && !src.toLowerCase().endsWith('.pdf')) { const i = new Image(); i.src = src; }
+        if (src) { const i = new Image(); i.src = src; }
       });
 
-      // Desktop hover
+      // Hover/focus
       list.addEventListener('mouseover', e=>{
         const li = e.target.closest('li[data-img]');
         if (li) showImage(li.dataset.img);
@@ -178,8 +142,6 @@
         const to = e.relatedTarget;
         if (!list.contains(to)) showVideo();
       });
-
-      // Keyboard focus
       list.addEventListener('focusin', e=>{
         const li = e.target.closest('li[data-img]');
         if (li) showImage(li.dataset.img);
@@ -189,7 +151,7 @@
         if (!list.contains(to)) showVideo();
       });
 
-      // Click/tap on a client to show; click/tap outside to revert
+      // Tap/click
       list.addEventListener('click', e=>{
         const li = e.target.closest('li[data-img]');
         if (!li) return;
