@@ -13,7 +13,7 @@
       --small: clamp(11px, 1vw, 14px);
       --base: clamp(12px, 1.1vw, 15px);
       --gap: clamp(12px, 2vw, 20px);
-      --media-ar: 16/9; /* updated to actual video ratio in JS */
+      --media-ar: 16/9; /* updated in JS */
     }
 
     html, body {
@@ -38,7 +38,7 @@
       position: relative;
       aspect-ratio: var(--media-ar);
       overflow: hidden;
-      background: #fff; /* white borders instead of black */
+      background: #fff;
     }
     .video-container > * {
       position: absolute; inset: 0;
@@ -99,19 +99,21 @@
 
     <main class="center">
       <div class="video-container" id="mediaBox" aria-live="polite">
-        <video id="heroVideo" autoplay loop muted playsinline>
-          <source src="COLDHARBOURLANEUK.mov" type="video/quicktime">
+        <video id="heroVideo" autoplay loop muted playsinline
+               preload="metadata" poster="poster.jpg">
           <source src="COLDHARBOURLANEUK.mp4" type="video/mp4">
           Ihr Browser unterstützt das Video-Tag nicht.
         </video>
-        <img id="clientImage" alt="" />
+        <img id="clientImage" alt=""
+             loading="lazy" decoding="async"
+             width="1040" height="585" />
       </div>
 
       <div class="text-block">
         <h2 class="section-title">Clients:</h2>
         <ul class="clients" id="clientsList">
           <li tabindex="0" data-img="032c.jpeg">032c</li>
-          <li tabindex="0" data-img="Kadewe.jpg">KaDeWe</li>
+          <li tabindex="0" data-img="Kadewe.jpeg">KaDeWe</li>
           <li tabindex="0" data-img="dalstonjazzbar.jpeg">Dalston Jazz Bar</li>
           <li tabindex="0" data-img="ernstbusch.jpeg">Ernst Busch Berlin</li>
           <li tabindex="0" data-img="langstonuibel.jpeg">Langston Uibel</li>
@@ -136,69 +138,48 @@
 
       // Update aspect ratio to match video
       videoEl.addEventListener('loadedmetadata', () => {
-        try {
-          const w = videoEl.videoWidth || 16;
-          const h = videoEl.videoHeight || 9;
-          if (w > 0 && h > 0) {
-            document.documentElement.style.setProperty('--media-ar', `${w}/${h}`);
-          }
-        } catch (_) {}
+        const w = videoEl.videoWidth || 16;
+        const h = videoEl.videoHeight || 9;
+        if (w > 0 && h > 0) {
+          document.documentElement.style.setProperty('--media-ar', `${w}/${h}`);
+        }
       });
 
       function showImage(src){
-        imgEl.src = src;
+        if (imgEl.src !== src) imgEl.src = src;
         mediaBox.classList.add('show-image');
         videoEl.pause();
       }
       function showVideo(){
         mediaBox.classList.remove('show-image');
-        videoEl.play().catch(()=>{});
+        if (!document.hidden && mediaBox.classList.contains('in-view')) {
+          videoEl.play().catch(()=>{});
+        }
       }
 
-      // Preload
-      Array.from(list.querySelectorAll('li[data-img]')).forEach(li=>{
-        const src = li.getAttribute('data-img');
-        if (src) { const i = new Image(); i.src = src; }
+      // Hover/focus/tap
+      ['mouseover','focusin','click','touchstart'].forEach(ev=>{
+        list.addEventListener(ev, e=>{
+          const li = e.target.closest('li[data-img]');
+          if (li) showImage(li.dataset.img);
+        }, {passive:true});
       });
 
-      // Hover/focus
-      list.addEventListener('mouseover', e=>{
-        const li = e.target.closest('li[data-img]');
-        if (li) showImage(li.dataset.img);
-      });
-      list.addEventListener('mouseout', e=>{
-        const to = e.relatedTarget;
-        if (!list.contains(to)) showVideo();
-      });
-      list.addEventListener('focusin', e=>{
-        const li = e.target.closest('li[data-img]');
-        if (li) showImage(li.dataset.img);
-      });
-      list.addEventListener('focusout', e=>{
-        const to = e.relatedTarget;
-        if (!list.contains(to)) showVideo();
-      });
-
-      // Tap/click
-      list.addEventListener('click', e=>{
-        const li = e.target.closest('li[data-img]');
-        if (!li) return;
-        e.stopPropagation();
-        showImage(li.dataset.img);
-      });
-      list.addEventListener('touchstart', e=>{
-        const li = e.target.closest('li[data-img]');
-        if (!li) return;
-        e.stopPropagation();
-        showImage(li.dataset.img);
-      }, {passive:true});
-
-      document.addEventListener('click', e=>{
+      document.addEventListener('pointerdown', e=>{
         if (!list.contains(e.target) && !mediaBox.contains(e.target)) showVideo();
       });
-      document.addEventListener('touchstart', e=>{
-        if (!list.contains(e.target) && !mediaBox.contains(e.target)) showVideo();
-      }, {passive:true});
+
+      // Sichtbarkeit: Video nur abspielen, wenn sichtbar
+      new IntersectionObserver((entries)=>{
+        if (!entries[0]) return;
+        if (entries[0].isIntersecting){
+          mediaBox.classList.add('in-view');
+          if (!mediaBox.classList.contains('show-image')) videoEl.play().catch(()=>{});
+        } else {
+          mediaBox.classList.remove('in-view');
+          videoEl.pause();
+        }
+      },{threshold:0.25}).observe(mediaBox);
     })();
   </script>
 </body>
