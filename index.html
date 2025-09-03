@@ -13,7 +13,7 @@
       --small: clamp(11px, 1vw, 14px);
       --base: clamp(12px, 1.1vw, 15px);
       --gap: clamp(12px, 2vw, 20px);
-      --media-ar: 16/9; /* updated in JS */
+      --media-ar: 1040/585; /* Startwert; wird in JS mit echter Video-Ratio überschrieben */
     }
 
     html, body {
@@ -47,7 +47,8 @@
       transition: opacity .18s ease-in-out;
       background: #fff;
     }
-    .video-container video { object-fit: cover; opacity: 1; }
+    /* Wichtig: kein Cropping/Zoom mehr */
+    .video-container video { object-fit: contain; opacity: 1; }
     .video-container img  { object-fit: contain; opacity: 0; pointer-events: none; }
 
     .video-container.show-image video { opacity: 0; }
@@ -87,7 +88,6 @@
 </head>
 <body>
   <!-- Overlay block – entfernen oder ausblenden, wenn Seite live -->
- 
 
   <div class="page">
     <div class="brand">
@@ -134,7 +134,7 @@
       const videoEl  = document.getElementById('heroVideo');
       const list     = document.getElementById('clientsList');
 
-      // Update aspect ratio to match video
+      // Exakte Aspect Ratio aus dem Video übernehmen
       videoEl.addEventListener('loadedmetadata', () => {
         const w = videoEl.videoWidth || 16;
         const h = videoEl.videoHeight || 9;
