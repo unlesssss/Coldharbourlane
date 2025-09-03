@@ -57,7 +57,10 @@
     .section-title { margin: 0 0 4px 0; font-size: var(--base); font-style: italic; font-weight: 700; }
     .clients, .address { list-style: none; margin: 0; padding: 0; font-size: var(--base); line-height: 1.4; }
     .clients li { cursor: pointer; }
-    .clients li:focus { outline: 1px dotted #000; outline-offset: 2px; }
+    /* Kein dotted border mehr beim Klick */
+    .clients li:focus { outline: none; }
+    .clients li:focus-visible { outline: 1px dotted #000; outline-offset: 2px; }
+
     .address { margin-top: 20px; }
     .address a, .address a:visited { color: inherit; text-decoration: none; }
 
@@ -162,6 +165,17 @@
 
       document.addEventListener('pointerdown', e=>{
         if (!list.contains(e.target) && !mediaBox.contains(e.target)) showVideo();
+      });
+
+      // Video zurück wenn Maus oder Fokus die Liste verlässt
+      list.addEventListener('mouseleave', () => { showVideo(); });
+      list.addEventListener('mouseout', (e) => {
+        const fromLi = e.target.closest('li');
+        const toLi = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('#clientsList li');
+        if (fromLi && !toLi) showVideo();
+      });
+      list.addEventListener('focusout', (e) => {
+        if (!list.contains(e.relatedTarget)) showVideo();
       });
 
       // Sichtbarkeit: Video nur abspielen, wenn sichtbar
